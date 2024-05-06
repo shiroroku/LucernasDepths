@@ -1,0 +1,25 @@
+{
+    "total_frames" : 3,
+    "frames": [
+        {
+            "tail": {
+                "rotation": -45
+            }
+        },
+        {
+            "tail": {
+                "rotation": 0
+            }
+        },
+        {
+            "tail": {
+                "rotation": 45
+            }
+        },
+        {
+            "tail": {
+                "rotation": 0
+            }
+        }
+    ]
+}

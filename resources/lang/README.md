@@ -1,0 +1,1 @@
+Add translations in here. Specify the language file inside client config. Missing keys in other languages will load the english version instead.

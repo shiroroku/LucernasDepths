@@ -1,0 +1,16 @@
+{
+    "texture": {
+        "atlas": "tiles/dirt_wall.png",
+        "bitmask": {
+            "mapping": "tiles/bitmask.wall.json",
+            "connects_to": [
+                "stone_wall"
+            ]
+        }
+    },
+    "properties": {
+        "solid": 1,
+        "toughness": 2,
+        "break_tile": "dirt"
+    }
+}

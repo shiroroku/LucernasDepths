@@ -1,0 +1,13 @@
+{
+    "texture": {
+        "atlas": "tiles/grass.png",
+        "bitmask": {
+            "mapping": "tiles/bitmask.floor.json",
+            "connects_to": [
+                "dirt_wall",
+                "stone_wall"
+            ]
+        }
+    },
+    "properties": {}
+}

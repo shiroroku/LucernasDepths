@@ -1,0 +1,8 @@
+{
+    "texture": {
+        "atlas": "sprites/tools.png",
+        "u": 0,
+        "v": 0
+    },
+    "properties": {}
+}

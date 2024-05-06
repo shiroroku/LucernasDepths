@@ -1,0 +1,8 @@
+{
+    "texture": {
+        "atlas": "tiles/atlas.png",
+        "u": 2,
+        "v": 0
+    },
+    "properties": {}
+}

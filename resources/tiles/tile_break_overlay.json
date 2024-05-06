@@ -1,0 +1,9 @@
+{
+    "texture": {
+        "atlas": "tiles/tile_break_overlay.png",
+        "bitmask": {
+            "mapping": "tiles/bitmask.tile_break_overlay.json"
+        }
+    },
+    "properties": {}
+}
