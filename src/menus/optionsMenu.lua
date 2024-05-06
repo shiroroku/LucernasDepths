@@ -16,7 +16,7 @@ OptionsMenuConstructor = Scene:extend {
             w = INTERNAL_RES_WIDTH - padding_x * 2,
             h = INTERNAL_RES_HEIGHT - padding_y * 2 - 16,
             item_constructor = function()
-                return {
+                local item_table = {
                     {
                         name = GetTranslation("options.group.general"),
                         centered = true
@@ -48,129 +48,38 @@ OptionsMenuConstructor = Scene:extend {
                     {
                         name = GetTranslation("options.group.controls"),
                         centered = true
-                    },
-                    {
-                        name = GetTranslation("options.items.jump"),
-                        type = "key",
-                        key = CLIENT_CONFIG.key_binds.jump,
-                        onChange = function(_, item)
-                            CLIENT_CONFIG.key_binds.jump = item.key
-                            SaveClientConfig()
-                        end
-                    },
-                    {
-                        name = GetTranslation("options.items.up"),
-                        type = "key",
-                        key = CLIENT_CONFIG.key_binds.up,
-                        onChange = function(_, item)
-                            CLIENT_CONFIG.key_binds.up = item.key
-                            SaveClientConfig()
-                        end
-                    },
-                    {
-                        name = GetTranslation("options.items.down"),
-                        type = "key",
-                        key = CLIENT_CONFIG.key_binds.down,
-                        onChange = function(_, item)
-                            CLIENT_CONFIG.key_binds.down = item.key
-                            SaveClientConfig()
-                        end
-                    },
-                    {
-                        name = GetTranslation("options.items.left"),
-                        type = "key",
-                        key = CLIENT_CONFIG.key_binds.left,
-                        onChange = function(_, item)
-                            CLIENT_CONFIG.key_binds.left = item.key
-                            SaveClientConfig()
-                        end
-                    },
-                    {
-                        name = GetTranslation("options.items.right"),
-                        type = "key",
-                        key = CLIENT_CONFIG.key_binds.right,
-                        onChange = function(_, item)
-                            CLIENT_CONFIG.key_binds.right = item.key
-                            SaveClientConfig()
-                        end
-                    },
-                    {
-                        name = GetTranslation("options.items.inventory"),
-                        type = "key",
-                        key = CLIENT_CONFIG.key_binds.inventory,
-                        onChange = function(_, item)
-                            CLIENT_CONFIG.key_binds.inventory = item.key
-                            SaveClientConfig()
-                        end
-                    },
-                    {
-                        name = GetTranslation("options.items.back"),
-                        type = "key",
-                        key = CLIENT_CONFIG.key_binds.back,
-                        onChange = function(_, item)
-                            CLIENT_CONFIG.key_binds.back = item.key
-                            SaveClientConfig()
-                        end
-                    },
-                    {
-                        name = GetTranslation("options.items.pause"),
-                        type = "key",
-                        key = CLIENT_CONFIG.key_binds.pause,
-                        onChange = function(_, item)
-                            CLIENT_CONFIG.key_binds.pause = item.key
-                            SaveClientConfig()
-                        end
-                    },
-                    {
-                        name = GetTranslation("options.items.select"),
-                        type = "key",
-                        key = CLIENT_CONFIG.key_binds.select,
-                        onChange = function(_, item)
-                            CLIENT_CONFIG.key_binds.select = item.key
-                            SaveClientConfig()
-                        end
-                    },
-                    {
-                        name = GetTranslation("options.items.toggle_fullscreen"),
-                        type = "key",
-                        key = CLIENT_CONFIG.key_binds.toggle_fullscreen,
-                        onChange = function(_, item)
-                            CLIENT_CONFIG.key_binds.toggle_fullscreen = item.key
-                            SaveClientConfig()
-                        end
-                    },
-                    {
-                        name = GetTranslation("options.group.developer"),
-                        centered = true
-                    },
-                    {
-                        name = GetTranslation("options.items.show_debug"),
-                        type = "boolean",
-                        enabled = CLIENT_CONFIG.render_debug,
-                        onChange = function(_, item)
-                            CLIENT_CONFIG.render_debug = item.enabled
-                            SaveClientConfig()
-                        end
-                    },
-                    {
-                        name = GetTranslation("options.items.toggle_console"),
-                        type = "key",
-                        key = CLIENT_CONFIG.key_binds.toggle_console,
-                        onChange = function(_, item)
-                            CLIENT_CONFIG.key_binds.toggle_console = item.key
-                            SaveClientConfig()
-                        end
-                    },
-                    {
-                        name = GetTranslation("options.items.toggle_debug"),
-                        type = "key",
-                        key = CLIENT_CONFIG.key_binds.toggle_debug,
-                        onChange = function(_, item)
-                            CLIENT_CONFIG.key_binds.toggle_debug = item.key
-                            SaveClientConfig()
-                        end
                     }
                 }
+
+                local sorted = {}
+                for key_name, key_bind in pairs(CLIENT_CONFIG.key_binds) do
+                    table.insert(sorted, {
+                        name = GetTranslation("options.items." .. key_name),
+                        type = "key",
+                        key = key_bind,
+                        onChange = function(_, item)
+                            CLIENT_CONFIG.key_binds[key_name] = item.key
+                            SaveClientConfig()
+                        end
+                    })
+                end
+                table.sort(sorted, function(a, b) return string.lower(a.name) < string.lower(b.name) end)
+                for _, value in pairs(sorted) do table.insert(item_table, value) end
+
+                table.insert(item_table, {
+                    name = GetTranslation("options.group.developer"),
+                    centered = true
+                })
+                table.insert(item_table, {
+                    name = GetTranslation("options.items.show_debug"),
+                    type = "boolean",
+                    enabled = CLIENT_CONFIG.render_debug,
+                    onChange = function(_, item)
+                        CLIENT_CONFIG.render_debug = item.enabled
+                        SaveClientConfig()
+                    end
+                })
+                return item_table
             end
         }
         self.buttons = {
