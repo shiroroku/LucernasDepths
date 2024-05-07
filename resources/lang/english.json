@@ -29,7 +29,7 @@
     "pause.options": "Options",
     "pause.quit_to_menu": "Quit To Main Menu",
     "pause.quit_to_desktop": "Quit To Desktop",
-    "messagebox.disconnect_timeout": "Connection Timed out!",
+    "messagebox.disconnect_timeout": "Connection timed out!",
     "messagebox.disconnect_closed": "Server Closed!",
     "messagebox.disconnect_already_joined": "You are already connected!",
     "messagebox.ok": "Ok"
