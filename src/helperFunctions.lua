@@ -78,7 +78,7 @@ function DrawText(text, x, y, color, bordercolor)
             }
             table.insert(love_color_table, rgb)
             table.insert(love_color_table, string)
-            table.insert(love_color_table_border, bordercolor or { 0, 0, 0, math.max(0.5 - a, 0) })
+            table.insert(love_color_table_border, bordercolor or { 0, 0, 0, a })
             table.insert(love_color_table_border, string)
         end
 
