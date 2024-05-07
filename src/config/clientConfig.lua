@@ -55,7 +55,7 @@ function DefaultClientConfig()
         multiplayer_token = string.format("%d-%d-%d", math.random(99999), math.random(99999), math.random(99999)), -- unique token, for logging back into your player
         multiplayer_name = "Meower",
         server_timeout = 5,
-        server_ip = "192.168.1.11",
+        server_ip = "127.0.0.1",
         server_port = 12345
     }
 end
