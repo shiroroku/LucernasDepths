@@ -2,20 +2,11 @@ local json = require "libraries.json.json"
 require "libraries.json.json-beautify"
 require "src.world.entities.livingEntity"
 
-local default_inv = {}
-default_inv[4] = { item = "stone_pickaxe", data = {} }
-
 PlayerEntity = LivingEntity:extend {
 
     init = function(self, name, uuid, data)
-        LivingEntity.init(self, name, data)
-        self.uuid = assert(uuid, "Player must have UUID")
+        LivingEntity.init(self, name, uuid, data)
         self.data.inventory = data.inventory or {}
-    end,
-
-    -- uuid for players, shared with all clients
-    GetUUID = function(self)
-        return self.uuid
     end,
 
     -- checks to see if the player has a position, basically loaded
@@ -155,7 +146,6 @@ PlayerEntity = LivingEntity:extend {
     Server_Save = function(self, world_folder, file_name)
         local player_save = {
             name = self.name,
-            uuid = self.uuid,
             data = self.data
         }
         local success, err = love.filesystem.write(string.format("worlds/%s/players/%s.json", world_folder, file_name), json.beautify(player_save))
@@ -170,7 +160,6 @@ PlayerEntity = LivingEntity:extend {
         if player_file then
             local decoded = json.decode(player_file)
             self.name = decoded.name
-            self.uuid = decoded.uuid
             self.data = decoded.data
             return true
         end

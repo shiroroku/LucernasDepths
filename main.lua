@@ -20,7 +20,6 @@ FontRegular:setFilter("nearest", "nearest")
 FontBig = love.graphics.newFont("resources/fonts/CozetteVector.ttf", 26)
 FontBig:setFilter("nearest", "nearest")
 
-InGameScene = InGameSceneConstructor()
 ServerScene = ServerSceneConstructor()
 MainMenuScene = MainMenuSceneConstructor()
 DebugWorldGenScene = DebugWorldGenSceneConstructor()

@@ -33,9 +33,10 @@ InGameSceneConstructor = Scene:extend {
 		self.update_rate = 0.01 -- 100Hz, the rate that the client sends inputs to the server
 		self.local_world = {
 			chunks = {},
-			players = {} -- [uuid]{player class}
+			players = {}, -- [uuid]{player class}
+			entities = {} -- [uuid]{extends entity}
 		}
-		self.local_player = PlayerEntity(CLIENT_CONFIG.multiplayer_name, CLIENT_CONFIG.multiplayer_uuid, {})
+		self.local_player = PlayerEntity(CLIENT_CONFIG.multiplayer_name, NewUUID(), {})
 		self.local_player:SetSkinColors(CLIENT_CONFIG.player_skin_colors)
 		self.local_player:SetSkin(CLIENT_CONFIG.player_skin)
 		self.local_player:Client_SetCharacter(CHARACTERS[CLIENT_CONFIG.player_skin](
@@ -45,14 +46,15 @@ InGameSceneConstructor = Scene:extend {
 			CLIENT_CONFIG.player_skin_colors.secondary
 		))
 
+
 		ClientEvents = {
 			update_players = function(_, data) -- patches players which are not us
 				-- data is [uuid]{data}
 				for uuid, player_data in pairs(data.players) do
-					if uuid ~= CLIENT_CONFIG.multiplayer_uuid then -- not us
+					if uuid ~= self.local_player:GetUUID() then -- not us
 						if self.local_world.players[uuid] then -- we have old data already, replace it
 							self.local_world.players[uuid]:SetData(player_data.data)
-						else                        -- make a new player
+						else                     -- make a new player
 							self.local_world.players[uuid] = PlayerEntity(player_data.name, player_data.uuid, player_data.data)
 						end
 						-- if we dont have a character made, but we can see them, then make one
@@ -90,7 +92,7 @@ InGameSceneConstructor = Scene:extend {
 				client:send({
 					event = "player_auth",
 					token = CLIENT_CONFIG.multiplayer_token, -- should be encrypted, and only sent here this one time
-					uuid = CLIENT_CONFIG.multiplayer_uuid,
+					uuid = self.local_player:GetUUID(),
 					name = CLIENT_CONFIG.multiplayer_name,
 					skin = CLIENT_CONFIG.player_skin,
 					skin_colors = CLIENT_CONFIG.player_skin_colors

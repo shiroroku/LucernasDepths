@@ -52,8 +52,7 @@ function DefaultClientConfig()
                 l = 0
             }
         },
-        multiplayer_token = string.format("%d-%d-%d", math.random(99999), math.random(99999), math.random(99999)), -- unique token, dont share this
-        multiplayer_uuid = string.format("%d-%d-%d", math.random(99999), math.random(99999), math.random(99999)),  -- public uuid
+        multiplayer_token = string.format("%d-%d-%d", math.random(99999), math.random(99999), math.random(99999)), -- unique token, for logging back into your player
         multiplayer_name = "Meower",
         server_timeout = 5,
         server_ip = "192.168.1.11",

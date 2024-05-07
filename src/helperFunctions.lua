@@ -169,3 +169,7 @@ function RayCast(x1, y1, x2, y2, max_distance, hit_condition)
     end
     return false, x_check, y_check
 end
+
+function NewUUID()
+    return string.format("%d-%d-%d", math.random(999999), math.random(999999), math.random(999999))
+end

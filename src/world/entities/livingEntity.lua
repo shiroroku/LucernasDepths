@@ -2,8 +2,8 @@ require "src.world.entities.entity"
 
 -- An Entity which has health and movement
 LivingEntity = Entity:extend {
-    init = function(self, name, data)
-        Entity.init(self, name, data)
+    init = function(self, name, uuid, data)
+        Entity.init(self, name, uuid, data)
     end,
 
     -- assume nil as invulnerable

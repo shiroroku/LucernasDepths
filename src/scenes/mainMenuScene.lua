@@ -6,8 +6,6 @@ require "src.components.ui.textbox"
 require "src.lang"
 require "src.components.scene"
 
-
-
 MainMenuSceneConstructor = Scene:extend {
     init = function(self)
         Scene.init(self, "Main Menu")
@@ -23,7 +21,7 @@ MainMenuSceneConstructor = Scene:extend {
                 y = 110,
                 w = 100,
                 centered = true,
-                onClick = function() SetScene(InGameScene) end,
+                onClick = function() SetScene(InGameSceneConstructor()) end,
             },
             Button:new {
                 name = GetTranslation("main_menu.options"),
