@@ -1,11 +1,28 @@
 require "src.helperFunctions"
 
+--- @alias text_align
+--- | "center"
+--- | "left"
+--- | "right"
+
+--- @class Button
+--- @field name string
+--- @field x number
+--- @field y number
+--- @field w number
+--- @field h number
+--- @field color table
+--- @field centered boolean
+--- @field padding number
+--- @field text_align text_align
+--- @field background_color table
+--- @field text_border_color table
+--- @field onClick fun(x : number, y : number, mouse_button : number)
 Button = {}
 
 function Button:new(params)
     local o = {}
-    setmetatable(o, self)
-    self.__index = self
+    setmetatable(o, { __index = self })
     o.name = params.name or "Button"
     o.x = params.x or 0
     o.y = params.y or 0

@@ -1,11 +1,19 @@
 require "src.components.ui.panel"
 
+--- @class ToolTip
+--- @field text string
+--- @field x number
+--- @field y number
+--- @field w number
+--- @field h number
+--- @field padding number
+--- @field visible boolean
+--- @field delay number
 ToolTip = {}
 
 function ToolTip:new(params)
     local o = {}
-    setmetatable(o, self)
-    self.__index = self
+    setmetatable(o, { __index = self })
     o.text = params.text or ""
     -- x, y, w, h, are for packing tooltip within that space, location and size are calculated
     o.x = params.x or 0

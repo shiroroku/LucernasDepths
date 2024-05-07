@@ -1,12 +1,18 @@
 require "src.components.ui.panel"
 require "src.lang"
 
+--- @class MessageBox
+--- @field text string
+--- @field x number
+--- @field y number
+--- @field visible boolean
+--- @field onClose function
+--- @field button Button
 MessageBox = {}
 
 function MessageBox:new(params)
     local o = {}
-    setmetatable(o, self)
-    self.__index = self
+    setmetatable(o, { __index = self })
     o.x = params.x or INTERNAL_RES_WIDTH / 2
     o.y = params.y or INTERNAL_RES_HEIGHT / 2
     o.text = params.text or "Message Key!"

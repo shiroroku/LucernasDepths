@@ -2,27 +2,35 @@ require "src.components.ui.panel"
 require "src.helperFunctions"
 local utf8 = require("utf8")
 
+--- @class TextBox
+--- @field text string
+--- @field default_text string
+--- @field x number
+--- @field y number
+--- @field w number
+--- @field h number
+--- @field beam_blink number
+--- @field onSubmit fun(text_box : TextBox)
 TextBox = {}
 
-local beam_blink_duration = 0.5
-local focused_tint = 0.4
+local _beam_blink_duration = 0.5
+local _focused_tint = 0.4
 
 function TextBox:new(params)
     local o = {}
-    setmetatable(o, self)
-    self.__index = self
+    setmetatable(o, { __index = self })
     o.x = params.x or 0
     o.y = params.y or 0
     o.w = params.w or 0
     o.h = params.h or 16
     o.default_text = params.default_text or ""
     o.text = params.text or ""
-    o.beam_blink = beam_blink_duration
+    o.beam_blink = _beam_blink_duration
     o.onSubmit = params.onSubmit or function() end
     return o
 end
 
-function TextBox:Flash(color)
+function TextBox:flash(color)
     self.flash_color = color
     self.flash = 0.1
 end
@@ -30,7 +38,7 @@ end
 function TextBox:draw()
     local tint = 0.3
     if self.focused then
-        tint = focused_tint
+        tint = _focused_tint
     end
     love.graphics.setColor({ tint, tint, tint, 1 })
     DrawPanel(self.x, self.y, self.w, self.h, PanelIn)
@@ -60,12 +68,12 @@ function TextBox:update(dt)
 
     if self.focused then
         self.beam = self.beam_blink >= 0
-        if self.beam_blink <= -beam_blink_duration then
-            self.beam_blink = beam_blink_duration
+        if self.beam_blink <= -_beam_blink_duration then
+            self.beam_blink = _beam_blink_duration
         end
         self.beam_blink = self.beam_blink - dt
     elseif self.beam_blink <= 0 then
-        self.beam_blink = beam_blink_duration
+        self.beam_blink = _beam_blink_duration
         self.beam = false
     end
 end
@@ -97,12 +105,12 @@ function TextBox:keyPress(key, scancode, isrepeat)
         end
         if key == "v" and love.keyboard.isDown("lctrl", "rctrl") then
             self.text = self.text .. love.system.getClipboardText():gsub("\n", "")
-            self:Flash({ 0.2, 1, 0.2 })
+            self:flash({ 0.2, 1, 0.2 })
             return true
         end
         if key == "c" and love.keyboard.isDown("lctrl", "rctrl") then
             love.system.setClipboardText(self.text)
-            self:Flash({ 1, 0.2, 0.2 })
+            self:flash({ 1, 0.2, 0.2 })
             return true
         end
     end

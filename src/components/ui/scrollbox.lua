@@ -2,43 +2,42 @@ require "src.helperFunctions"
 require "src.components.ui.button"
 require "src.components.ui.panel"
 
+--- @alias item_type
+--- | "boolean"
+--- | "key"
+
+--- @class ScrollBoxItem
+--- @field name string
+--- @field centered boolean
+--- @field type item_type
+--- @field tooltip ToolTip
+--- @field onChange fun(scrollbox : ScrollBox, item : ScrollBoxItem)
+--- @field enabled boolean?
+--- @field key string?
+
+--- @class ScrollBox
+--- @field x number
+--- @field y number
+--- @field w number
+--- @field h number
+--- @field percent number
+--- @field item_constructor fun() : ScrollBoxItem[]
+--- @field items ScrollBoxItem[]
+--- @field _up_sprite love.Image
+--- @field _down_sprite love.Image
+--- @field _x_sprite love.Image
 ScrollBox = {}
 
---[[
-
-ScrollBox params:
-
-x = x coord
-y = y coord
-w = width
-h = height
-item_constructor = function returning table of "items"
-- optional -
-percent = where scrollbar is positioned 0: top, 0.5: middle, 1: bottom
-
-items params:
-name = text shown
-- optional -
-centered = boolean, if the text should appear in the middle
-type = "boolean" or "key", changes behavior of item, boolean for checkbox, key for key input box
-onChanged = function, called when this item is changed, only for typed items
-enabled = for boolean items, sets the box checked or not
-
-]]
+local _item_height = 18
+local _sprite_res = 16
+local _scroll_amount = 0.2
 
 function ScrollBox:new(params)
     local o = {}
-    setmetatable(o, self)
-    self.__index = self
-
-    o.upSprite = love.graphics.newImage("resources/textures/ui/arrow_up.png")
-    o.downSprite = love.graphics.newImage("resources/textures/ui/arrow_down.png")
-    o.xSprite = love.graphics.newImage("resources/textures/ui/x.png")
-    o.spriteRes = 16
-    o.itemHeight = 18
-    o.scrollAmount = 0.2 -- percent per mouse scroll or arrow click
-
-
+    setmetatable(o, { __index = self })
+    o._up_sprite = love.graphics.newImage("resources/textures/ui/arrow_up.png")
+    o._down_sprite = love.graphics.newImage("resources/textures/ui/arrow_down.png")
+    o._x_sprite = love.graphics.newImage("resources/textures/ui/x.png")
     o.x = params.x or 0
     o.y = params.y or 0
     o.w = params.w or 0
@@ -52,7 +51,7 @@ end
 local function ItemOverflowAmount(scrollbox)
     local count = 0
     for _ in pairs(scrollbox.items) do count = count + 1 end
-    local item_height = scrollbox.itemHeight * count
+    local item_height = _item_height * count
     if item_height < scrollbox.h then
         return 0
     end
@@ -78,7 +77,7 @@ end
 
 function ScrollBox:draw()
     -- main panel
-    DrawPanel(self.x, self.y, self.w - self.spriteRes, self.h, PanelIn)
+    DrawPanel(self.x, self.y, self.w - _sprite_res, self.h, PanelIn)
 
     -- items
     local scroll_offset = 2 - ((ItemOverflowAmount(self)) * self.percent)
@@ -88,7 +87,7 @@ function ScrollBox:draw()
         dark_panel = not dark_panel
         if dark_panel then -- alternating background panel
             love.graphics.setColor({ 0, 0, 0, 0.15 })
-            love.graphics.rectangle("fill", self.x, self.y + scroll_offset, self.w, self.itemHeight)
+            love.graphics.rectangle("fill", self.x, self.y + scroll_offset, self.w, _item_height)
             love.graphics.setColor({ 1, 1, 1, 1 })
         end
 
@@ -98,16 +97,16 @@ function ScrollBox:draw()
             x_offset = self.w * 0.5 - GetTextWidth(item.name) * 0.5
         end
         DrawText(item.name, self.x + x_offset,
-            self.y + scroll_offset + (self.itemHeight * 0.5 - FontRegular:getHeight() * 0.5))
+            self.y + scroll_offset + (_item_height * 0.5 - FontRegular:getHeight() * 0.5))
 
         -- check box/boolean
         if item.type == "boolean" then
-            local y_offset = self.itemHeight * 0.5 - self.spriteRes * 0.5
+            local y_offset = _item_height * 0.5 - _sprite_res * 0.5
             local x_offset = -3
-            DrawPanel(self.x + self.w - self.spriteRes * 2 + x_offset, self.y + scroll_offset + y_offset, self.spriteRes, self.spriteRes,
+            DrawPanel(self.x + self.w - _sprite_res * 2 + x_offset, self.y + scroll_offset + y_offset, _sprite_res, _sprite_res,
                 PanelIn)
             if item.enabled == true then
-                love.graphics.draw(self.xSprite, self.x + self.w - self.spriteRes * 2 + x_offset, self.y + scroll_offset + y_offset)
+                love.graphics.draw(self._x_sprite, self.x + self.w - _sprite_res * 2 + x_offset, self.y + scroll_offset + y_offset)
             end
         end
 
@@ -124,7 +123,7 @@ function ScrollBox:draw()
                 y_offset + FontRegular:getHeight() * 0.5 - 2)
         end
 
-        scroll_offset = scroll_offset + self.itemHeight
+        scroll_offset = scroll_offset + _item_height
     end
 
     -- tooltips, logic is handled in update
@@ -145,19 +144,19 @@ function ScrollBox:draw()
     love.graphics.setColor({ 1, 1, 1, 1 })
 
     -- scrollbar
-    DrawPanel(self.x + self.w - self.spriteRes, self.y + self.spriteRes, self.spriteRes, self.h - self.spriteRes * 2, PanelIn)
-    DrawPanel(self.x + self.w - self.spriteRes, self.y, self.spriteRes, self.spriteRes)
-    love.graphics.draw(self.upSprite, self.x + self.w - self.spriteRes, self.y)
-    DrawPanel(self.x + self.w - self.spriteRes, self.y + self.h - self.spriteRes, self.spriteRes, self.spriteRes)
-    love.graphics.draw(self.downSprite, self.x + self.w - self.spriteRes, self.y + self.h - self.spriteRes)
+    DrawPanel(self.x + self.w - _sprite_res, self.y + _sprite_res, _sprite_res, self.h - _sprite_res * 2, PanelIn)
+    DrawPanel(self.x + self.w - _sprite_res, self.y, _sprite_res, _sprite_res)
+    love.graphics.draw(self._up_sprite, self.x + self.w - _sprite_res, self.y)
+    DrawPanel(self.x + self.w - _sprite_res, self.y + self.h - _sprite_res, _sprite_res, _sprite_res)
+    love.graphics.draw(self._down_sprite, self.x + self.w - _sprite_res, self.y + self.h - _sprite_res)
 
     -- scroll control
     local control_size = 32
     if CantScroll(self) then
-        control_size = self.h - self.spriteRes * 2
+        control_size = self.h - _sprite_res * 2
     end
-    local control_y = (self.h - self.spriteRes * 2 - control_size) * self.percent
-    DrawPanel(self.x + self.w - self.spriteRes, self.y + control_y + self.spriteRes, self.spriteRes, control_size)
+    local control_y = (self.h - _sprite_res * 2 - control_size) * self.percent
+    DrawPanel(self.x + self.w - _sprite_res, self.y + control_y + _sprite_res, _sprite_res, control_size)
 
     -- select key overlay
     if self.capture_key ~= nil then
@@ -179,9 +178,9 @@ function ScrollBox:update(dt)
             return
         end
         local control_size = 32
-        if self.grabbed or IsMouseWithin(mx, my, self.x + self.w - self.spriteRes, self.y + self.spriteRes, self.spriteRes, self.h - self.spriteRes * 2) then
+        if self.grabbed or IsMouseWithin(mx, my, self.x + self.w - _sprite_res, self.y + _sprite_res, _sprite_res, self.h - _sprite_res * 2) then
             local mouse_y = my + (self.percent - 1) * control_size / 2
-            self.percent = math.min(1.0, math.max(0.0, (mouse_y - control_size) / (self.h - self.spriteRes * 2 - control_size + self.y)))
+            self.percent = math.min(1.0, math.max(0.0, (mouse_y - control_size) / (self.h - _sprite_res * 2 - control_size + self.y)))
             if self.grabbed ~= true then self.grabbed = true end -- ? grabbed will be true?
         end
     else
@@ -201,13 +200,13 @@ function ScrollBox:update(dt)
     for _, item in pairs(self.items) do
         if item.tooltip then
             item.tooltip:update(dt)
-            if IsMouseWithin(mx, my, self.x, self.y + scroll_offset, self.w - 16, self.itemHeight) then
+            if IsMouseWithin(mx, my, self.x, self.y + scroll_offset, self.w - 16, _item_height) then
                 item.tooltip:onHoverEnter()
             else
                 item.tooltip:onHoverExit()
             end
         end
-        scroll_offset = scroll_offset + self.itemHeight
+        scroll_offset = scroll_offset + _item_height
     end
 end
 
@@ -219,9 +218,9 @@ function ScrollBox:mouseWheelScroll(x, y)
     local mx, my = GetMousePosition()
     if IsMouseWithin(mx, my, self.x, self.y, self.w, self.h) then
         if y > 0 then
-            Scroll(self, -self.scrollAmount)
+            Scroll(self, -_scroll_amount)
         elseif y < 0 then
-            Scroll(self, self.scrollAmount)
+            Scroll(self, _scroll_amount)
         end
     end
 end
@@ -243,11 +242,11 @@ function ScrollBox:mousePress(x, y, mouse_button)
     for k, item in pairs(self.items) do
         -- boolean boxes
         if item.type == "boolean" then
-            local check_y_offset = self.itemHeight * 0.5 - self.spriteRes * 0.5
+            local check_y_offset = _item_height * 0.5 - _sprite_res * 0.5
             local check_x_offset = -3
             local y_pos = self.y + scroll_offset + check_y_offset
             if y_pos <= self.h then
-                if IsMouseWithin(x, y, self.x + self.w - self.spriteRes * 2 + check_x_offset, y_pos, self.spriteRes, self.spriteRes) then
+                if IsMouseWithin(x, y, self.x + self.w - _sprite_res * 2 + check_x_offset, y_pos, _sprite_res, _sprite_res) then
                     if item.enabled ~= true then
                         item.enabled = true
                     else
@@ -270,17 +269,17 @@ function ScrollBox:mousePress(x, y, mouse_button)
                 end
             end
         end
-        scroll_offset = scroll_offset + self.itemHeight
+        scroll_offset = scroll_offset + _item_height
     end
 
     -- scrollbar arrow presses
     if CantScroll(self) then
         return
     end
-    if IsMouseWithin(x, y, self.x + self.w - self.spriteRes, self.y, self.spriteRes, self.spriteRes) then
-        Scroll(self, -self.scrollAmount)
+    if IsMouseWithin(x, y, self.x + self.w - _sprite_res, self.y, _sprite_res, _sprite_res) then
+        Scroll(self, -_scroll_amount)
     end
-    if IsMouseWithin(x, y, self.x + self.w - self.spriteRes, self.y + self.h - self.spriteRes, self.spriteRes, self.spriteRes) then
-        Scroll(self, self.scrollAmount)
+    if IsMouseWithin(x, y, self.x + self.w - _sprite_res, self.y + self.h - _sprite_res, _sprite_res, _sprite_res) then
+        Scroll(self, _scroll_amount)
     end
 end
