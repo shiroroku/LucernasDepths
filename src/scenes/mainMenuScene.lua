@@ -21,22 +21,25 @@ MainMenuSceneConstructor = Scene:extend {
                 name = GetTranslation("main_menu.connect"),
                 x = INTERNAL_RES_WIDTH / 2,
                 y = 110,
+                w = 100,
+                centered = true,
                 onClick = function() SetScene(InGameScene) end,
-                centered = true
             },
             Button:new {
                 name = GetTranslation("main_menu.options"),
                 x = INTERNAL_RES_WIDTH / 2,
                 y = 130,
+                w = 100,
+                centered = true,
                 onClick = function() Scene.ChangeSubScene(self, OptionsMenuConstructor(function() Scene.ChangeSubScene(self, {}) end)) end,
-                centered = true
             },
             Button:new {
                 name = GetTranslation("main_menu.quit"),
                 x = INTERNAL_RES_WIDTH / 2,
                 y = 150,
+                w = 100,
+                centered = true,
                 onClick = function() love.event.quit() end,
-                centered = true
             }
         }
     end,

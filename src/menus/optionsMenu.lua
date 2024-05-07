@@ -10,10 +10,11 @@ OptionsMenuConstructor = Scene:extend {
         Scene.init(self, "Options Menu")
         self.return_function = return_function
         local padding_x, padding_y = 96, 16
+        local scrollbox_w = INTERNAL_RES_WIDTH - padding_x * 2
         self.scrollbox = ScrollBox:new {
             x = padding_x,
             y = padding_y,
-            w = INTERNAL_RES_WIDTH - padding_x * 2,
+            w = scrollbox_w,
             h = INTERNAL_RES_HEIGHT - padding_y * 2 - 16,
             item_constructor = function()
                 local item_table = {
@@ -85,14 +86,16 @@ OptionsMenuConstructor = Scene:extend {
         self.buttons = {
             Button:new {
                 name = GetTranslation("options.back"),
-                x = padding_x + 2,
-                y = INTERNAL_RES_HEIGHT - 20,
+                x = padding_x + 1,
+                y = INTERNAL_RES_HEIGHT - 24,
+                w = scrollbox_w / 2 - 10,
                 onClick = self.return_function
             },
             Button:new {
                 name = GetTranslation("options.reset"),
-                x = INTERNAL_RES_WIDTH - padding_x - GetTextWidth(GetTranslation("options.reset")) - 2,
-                y = INTERNAL_RES_HEIGHT - 20,
+                x = INTERNAL_RES_WIDTH - padding_x - 1 - scrollbox_w / 2 + 5,
+                y = INTERNAL_RES_HEIGHT - 24,
+                w = scrollbox_w / 2 - 5,
                 onClick = function()
                     CLIENT_CONFIG = DefaultClientConfig()
                     SetFullscreen(false)

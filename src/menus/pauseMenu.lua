@@ -11,32 +11,44 @@ PauseMenuConstructor = Scene:extend {
                 name = GetTranslation("pause.continue"),
                 x = INTERNAL_RES_WIDTH / 2,
                 y = 110,
+                w = 130,
                 onClick = self.return_function,
-                centered = true
+                centered = true,
+                text_border_color = { 0, 0, 0, 1 },
+                background_color = { 0, 0, 0, 0.5 }
             },
             Button:new {
                 name = GetTranslation("pause.options"),
                 x = INTERNAL_RES_WIDTH / 2,
                 y = 130,
+                w = 130,
                 onClick = function() Scene.ChangeSubScene(self, OptionsMenuConstructor(function() Scene.ChangeSubScene(self, {}) end)) end,
-                centered = true
+                centered = true,
+                text_border_color = { 0, 0, 0, 1 },
+                background_color = { 0, 0, 0, 0.5 }
             },
             Button:new {
                 name = GetTranslation("pause.quit_to_menu"),
                 x = INTERNAL_RES_WIDTH / 2,
                 y = 170,
+                w = 130,
                 onClick = function()
                     self.return_function() -- so the pause menu isnt open if we reconnect
                     SetScene(MainMenuScene)
                 end,
-                centered = true
+                centered = true,
+                text_border_color = { 0, 0, 0, 1 },
+                background_color = { 0, 0, 0, 0.5 }
             },
             Button:new {
                 name = GetTranslation("pause.quit_to_desktop"),
                 x = INTERNAL_RES_WIDTH / 2,
                 y = 190,
+                w = 130,
                 onClick = function() love.event.quit() end,
-                centered = true
+                centered = true,
+                text_border_color = { 0, 0, 0, 1 },
+                background_color = { 0, 0, 0, 0.5 }
             }
         }
     end,
