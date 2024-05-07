@@ -4,7 +4,7 @@ local utf8 = require("utf8")
 
 TextBox = {}
 
-local beam_blink_duration = 40
+local beam_blink_duration = 0.5
 local focused_tint = 0.4
 
 function TextBox:new(params)
@@ -24,7 +24,7 @@ end
 
 function TextBox:Flash(color)
     self.flash_color = color
-    self.flash = 10
+    self.flash = 0.1
 end
 
 function TextBox:draw()
@@ -39,7 +39,7 @@ function TextBox:draw()
     local text = self.text
     local textcolor = { 1, 1, 1, 1 }
 
-    if self.flash ~= 0 then textcolor = self.flash_color end
+    if self.flash and self.flash >= 0 then textcolor = self.flash_color end
 
     local text_x_offset = 0
     if GetTextWidth(text) >= self.w - 10 then
@@ -56,15 +56,15 @@ function TextBox:draw()
 end
 
 function TextBox:update(dt)
-    if self.flash and self.flash > 0 then self.flash = self.flash - 1 end
+    if self.flash and self.flash > 0 then self.flash = self.flash - dt end
 
     if self.focused then
         self.beam = self.beam_blink >= 0
         if self.beam_blink <= -beam_blink_duration then
             self.beam_blink = beam_blink_duration
         end
-        self.beam_blink = self.beam_blink - 1
-    elseif self.beam_blink ~= 0 then
+        self.beam_blink = self.beam_blink - dt
+    elseif self.beam_blink <= 0 then
         self.beam_blink = beam_blink_duration
         self.beam = false
     end
