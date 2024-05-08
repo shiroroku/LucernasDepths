@@ -74,7 +74,7 @@ DebugWorldGenSceneConstructor = Scene:extend {
             for tile_coord, tile_instance in pairs(chunk_data) do
                 local chunk_x, chunk_y = SplitKey(chunk_coord)
                 local tile_x, tile_y = SplitKey(tile_coord)
-                TILE_REGISTRY[tile_instance.tile_key]:C_AddSpriteBatch(chunk_x * CHUNK_WIDTH * 16 + tile_x * 16, chunk_y * CHUNK_HEIGHT * 16 + tile_y * 16, tile_instance.bit)
+                TILE_REGISTRY[tile_instance.key]:C_addToSpriteBatch(chunk_x * CHUNK_WIDTH * 16 + tile_x * 16, chunk_y * CHUNK_HEIGHT * 16 + tile_y * 16, tile_instance.bit)
             end
         end
         C_DrawTileSBs()
@@ -86,7 +86,7 @@ DebugWorldGenSceneConstructor = Scene:extend {
             local chunk = self.local_world.chunks[m_cx .. ":" .. m_cy]
             local tile_instance = chunk and chunk[m_tx .. ":" .. m_ty]
             if chunk and tile_instance then
-                local text = string.format("[%d,%d][%s]", math.floor(mx / 16), math.floor(my / 16), tile_instance.tile_key)
+                local text = string.format("[%d,%d][%s]", math.floor(mx / 16), math.floor(my / 16), tile_instance.key)
                 if tile_instance.bit then
                     text = string.format("<#8888FF>%d<#FFFFFF>:%s", tile_instance.bit, text)
                 end

@@ -242,7 +242,7 @@ InGameSceneConstructor = Scene:extend {
 					local tx, ty = (chunk_x * CHUNK_WIDTH + tile_x) * 16, (chunk_y * CHUNK_HEIGHT + tile_y) * 16
 					if tx >= view_x and ty >= view_y and tx <= view_x2 and ty <= view_y2 then
 						t_n = t_n + 1
-						TILE_REGISTRY[tile_instance.tile_key]:C_AddSpriteBatch(chunk_x * CHUNK_WIDTH * 16 + tile_x * 16, chunk_y * CHUNK_HEIGHT * 16 + tile_y * 16, tile_instance)
+						TILE_REGISTRY[tile_instance.key]:C_addToSpriteBatch(chunk_x * CHUNK_WIDTH * 16 + tile_x * 16, chunk_y * CHUNK_HEIGHT * 16 + tile_y * 16, tile_instance)
 					end
 				end
 			end
@@ -251,7 +251,7 @@ InGameSceneConstructor = Scene:extend {
 
 
 			--TILE HIGHLIGHT (for block breaking/selecting)
-			local hit, hit_x, hit_y = RayCast(px, py, mouse_x, mouse_y, self.local_player:getReach(), function(x, y) return GetTileFromPoint(self.local_world, x, y):HasProperty("solid") end)
+			local hit, hit_x, hit_y = RayCast(px, py, mouse_x, mouse_y, self.local_player:getReach(), function(x, y) return GetTileFromPoint(self.local_world, x, y):hasProperty("solid") end)
 			if hit then
 				local tx, ty = PointToTilePos(hit_x, hit_y)
 				love.graphics.setColor(1, 1, 1, 0.3)
@@ -308,7 +308,7 @@ InGameSceneConstructor = Scene:extend {
 				local chunk = self.local_world.chunks[XYToCoordKey(m_cx, m_cy)]
 				local tile_instance = chunk and chunk[XYToCoordKey(m_tx, m_ty)]
 				if chunk and tile_instance then
-					local text = string.format("[%d,%d][%s]", math.floor(mx / 16), math.floor(my / 16), tile_instance.tile_key)
+					local text = string.format("[%d,%d][%s]", math.floor(mx / 16), math.floor(my / 16), tile_instance.key)
 					if tile_instance.bit then
 						text = string.format("<#8888FF>%d<#FFFFFF>:%s", tile_instance.bit, text)
 					end
@@ -366,7 +366,7 @@ InGameSceneConstructor = Scene:extend {
 		if self.local_player:isLoaded() and client then
 			local px, py = self.local_player:getPos()
 			local mx, my = GetMousePositionWorld(ClientCamera)
-			local hit, hit_x, hit_y = RayCast(px, py, mx, my, self.local_player:getReach(), function(tx, ty) return GetTileFromPoint(self.local_world, tx, ty):HasProperty("toughness") end)
+			local hit, hit_x, hit_y = RayCast(px, py, mx, my, self.local_player:getReach(), function(tx, ty) return GetTileFromPoint(self.local_world, tx, ty):hasProperty("toughness") end)
 			if hit then
 				client:send({
 					event = "break_block",

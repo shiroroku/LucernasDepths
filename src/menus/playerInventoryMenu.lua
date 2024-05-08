@@ -40,7 +40,7 @@ PlayerInventoryMenuConstructor = Scene:extend {
     ClickSlot = function(self, slot)
         if self.held_slot then
             -- we clicked on a slot with an item
-            if self.local_player:canSetInventorySlot(slot, self.local_player:getInventorySlot(self.held_slot).item) then
+            if self.local_player:canSetInventorySlot(slot, self.local_player:getInventorySlot(self.held_slot).key) then
                 if self.held_slot ~= slot then -- we picked up and placed in same location, no need to update
                     self.udp_client:send({
                         event = "player_inventory_move",
@@ -82,8 +82,7 @@ PlayerInventoryMenuConstructor = Scene:extend {
             love.graphics.setColor(1, 1, 1, 1)
             local slot_instance = self.local_player:getInventorySlot(slot)
             if slot_instance and slot ~= self.held_slot then
-                print(slot_instance)
-                ITEM_REGISTRY[slot_instance.item]:C_AddSpriteBatch(sx + 1, sy + 1)
+                ITEM_REGISTRY[slot_instance.key]:C_addToSpriteBatch(sx + 1, sy + 1)
                 goto continue
             end
             love.graphics.setColor(1, 1, 1, 0.6)
@@ -108,7 +107,7 @@ PlayerInventoryMenuConstructor = Scene:extend {
                 DrawPanel(sx, sy, 18, 18, PanelIn)
                 local slot_instance = self.local_player:getInventorySlot(slot)
                 if slot_instance and slot ~= self.held_slot then
-                    ITEM_REGISTRY[slot_instance.item]:C_AddSpriteBatch(sx + 1, sy + 1)
+                    ITEM_REGISTRY[slot_instance.key]:C_addToSpriteBatch(sx + 1, sy + 1)
                 end
                 if y == 0 then
                     love.graphics.setColor(0, 0, 0, 0.4)
@@ -139,7 +138,7 @@ PlayerInventoryMenuConstructor = Scene:extend {
 
         -- draws held item
         if self.held_slot and self.local_player:getInventorySlot(self.held_slot) then
-            ITEM_REGISTRY[self.local_player:getInventorySlot(self.held_slot).item]:C_AddSpriteBatch(mouse_x - 8, mouse_y - 8)
+            ITEM_REGISTRY[self.local_player:getInventorySlot(self.held_slot).key]:C_addToSpriteBatch(mouse_x - 8, mouse_y - 8)
         end
 
         C_DrawItemSBs()

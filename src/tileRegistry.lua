@@ -22,7 +22,7 @@ function LoadTileRegistry()
         -- COMMON
         local properties = tile_json.properties
         local key = tile_filename:gsub(".json", "")
-        local tile = Tile(key, properties)
+        local tile = Tile:new(key, properties)
 
         -- CLIENT
         local tile_atlas = string.format("resources/textures/%s", tile_json.texture.atlas)

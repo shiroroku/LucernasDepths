@@ -6,7 +6,7 @@ require "src.world.entities.livingEntity"
 ---@class PlayerEntity : LivingEntity
 PlayerEntity = LivingEntity:new()
 
----@alias inventory {[string]: table} -- todo change this to item_instance
+---@alias inventory {[string]: ItemInstance}
 
 function PlayerEntity:new(name, uuid, data)
     local o = LivingEntity:new(name, uuid, data)
@@ -46,7 +46,7 @@ function PlayerEntity:getInventorySize()
 end
 
 ---@param slot number
----@return table item_instance
+---@return ItemInstance
 function PlayerEntity:getInventorySlot(slot)
     return self:getInventory()[tostring(Clamp(slot, 0, self:getInventorySize()))]
 end
@@ -60,18 +60,18 @@ function PlayerEntity:canSetInventorySlot(slot, item_key)
         Log(string.format("Inventory trying to set unknown item \"%s\"", item_key))
         return false
     end
-    if slot == 0 then return ITEM_REGISTRY[item_key]:HasProperty("equipment_trinket") end
-    if slot == 1 then return ITEM_REGISTRY[item_key]:HasProperty("equipment_torso") end
-    if slot == 2 then return ITEM_REGISTRY[item_key]:HasProperty("equipment_legs") end
-    if slot == 3 then return ITEM_REGISTRY[item_key]:HasProperty("equipment_bag") end
+    if slot == 0 then return ITEM_REGISTRY[item_key]:hasProperty("equipment_trinket") end
+    if slot == 1 then return ITEM_REGISTRY[item_key]:hasProperty("equipment_torso") end
+    if slot == 2 then return ITEM_REGISTRY[item_key]:hasProperty("equipment_legs") end
+    if slot == 3 then return ITEM_REGISTRY[item_key]:hasProperty("equipment_bag") end
     return true
 end
 
 ---@param slot number
----@param item_instance table
+---@param item_instance ItemInstance
 function PlayerEntity:setInventorySlot(slot, item_instance)
     if slot == nil then return end
-    if self:canSetInventorySlot(slot, item_instance and item_instance.item or nil) then
+    if self:canSetInventorySlot(slot, item_instance and item_instance.key or nil) then
         local inv = self:getInventory()
         -- we use tostring because our packet encoding converts number tables wrong for some reason
         inv[tostring(Clamp(slot, 0, self:getInventorySize()))] = item_instance
@@ -145,16 +145,16 @@ function PlayerEntity:move(world, dx, dy, dt)
         local bl_col = GetTileFromPoint(world, (dy == 1 and oldx or newx) + p_bl_x, (dx == -1 and oldy or newy) + p_bl_y)
         local br_col = GetTileFromPoint(world, (dy == 1 and oldx or newx) + p_br_x, (dx == 1 and oldy or newy) + p_br_y)
 
-        if tl_col:HasProperty("solid") or tr_col:HasProperty("solid") then -- top
+        if tl_col:hasProperty("solid") or tr_col:hasProperty("solid") then -- top
             if dy == -1 then newy = oldy end                               -- moving up
         end
-        if bl_col:HasProperty("solid") or br_col:HasProperty("solid") then -- bottom
+        if bl_col:hasProperty("solid") or br_col:hasProperty("solid") then -- bottom
             if dy == 1 then newy = oldy end                                -- moving down
         end
-        if tl_col:HasProperty("solid") or bl_col:HasProperty("solid") then -- left
+        if tl_col:hasProperty("solid") or bl_col:hasProperty("solid") then -- left
             if dx == -1 then newx = oldx end                               -- moving left
         end
-        if tr_col:HasProperty("solid") or br_col:HasProperty("solid") then -- right
+        if tr_col:hasProperty("solid") or br_col:hasProperty("solid") then -- right
             if dx == 1 then newx = oldx end                                -- moving right
         end
 

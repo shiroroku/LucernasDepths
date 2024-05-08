@@ -15,13 +15,6 @@ function XYToCoordKey(x, y)
     return x .. ":" .. y
 end
 
----@class TileInstance
----@field tile_key string the tiles name, ex "dirt", "stone_wall"
----@field damage number? how much health the tile has, 0.0-1.0, nil if full health
----@field bit number? added by the autotiler for rendering the bitmask
----@field last_damaged number? last server tick that this tile was damaged
-TileInstance = {}
-
 ---@class Chunk
 ---@alias coordKey string a string which contains coords "x:y"
 ---@type table<coordKey, TileInstance>
@@ -203,7 +196,7 @@ end
 function GetTileFromPoint(world, x, y)
     local tile_instance = GetTileInstanceFromPoint(world, x, y)
     if tile_instance then
-        return TILE_REGISTRY[tile_instance.tile_key]
+        return TILE_REGISTRY[tile_instance.key]
     end
     return TILE_REGISTRY["missing"]
 end

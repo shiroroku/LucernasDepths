@@ -81,7 +81,7 @@ ServerSceneConstructor = Scene:extend {
                 local loaded_player = player:S_load(self.world.name, data.token)
                 if not loaded_player then
                     player:setPos(CHUNK_WIDTH / 2 * 16, CHUNK_HEIGHT / 2 * 16)
-                    player:setInventorySlot(4, { item = "stone_pickaxe" })
+                    player:setInventorySlot(4, { key = "stone_pickaxe" })
                     Log(string.format("%s! A new player!", data.name), COLORS.green)
                     player:S_save(self.world.name, data.token)
                 end
@@ -127,17 +127,17 @@ ServerSceneConstructor = Scene:extend {
                 if player then
                     local px, py = player:getPos()
                     local hit, hit_x, hit_y = RayCast(px, py, data.x, data.y, player:getReach(), function(x, y)
-                        return GetTileFromPoint(self.world, x, y):HasProperty("toughness")
+                        return GetTileFromPoint(self.world, x, y):hasProperty("toughness")
                     end)
                     if hit then
                         local tx, ty = PointToTilePos(hit_x, hit_y)
                         local tile = GetTileFromPoint(self.world, hit_x, hit_y)
                         local tile_instance = GetTileInstanceFromPoint(self.world, hit_x, hit_y)
                         if tile_instance then
-                            local item_mining_damage = 1 / tile:GetProperty("toughness")
+                            local item_mining_damage = 1 / tile:getProperty("toughness")
                             local tile_damage = (tile_instance.damage or 0) + item_mining_damage
                             if tile_damage >= 1 then
-                                SetTile(self.world, tx, ty, { tile_key = tile:GetProperty("break_tile") or "dirt" })
+                                SetTile(self.world, tx, ty, { key = tile:getProperty("break_tile") or "dirt" })
                                 sendTileChanged(self.world, tx, ty)
                             else
                                 tile_instance.damage = tile_damage

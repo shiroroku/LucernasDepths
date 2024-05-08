@@ -22,7 +22,7 @@ function LoadItemRegistry()
         -- COMMON
         local properties = item_json.properties
         local key = item_filename:gsub(".json", "")
-        local item = Item(key, properties)
+        local item = Item:new(key, properties)
 
         -- CLIENT
         local item_atlas = string.format("resources/textures/%s", item_json.texture.atlas)

@@ -8,7 +8,7 @@ ItemEntity = Entity:new()
 ---@param uuid string
 ---@param data table
 function ItemEntity:new(item, uuid, data)
-    local o = Entity:new(item:GetKey(), uuid, data)
+    local o = Entity:new(item:getKey(), uuid, data)
     setmetatable(o, { __index = self })
     o.item = item or nil
     return o
@@ -16,5 +16,5 @@ end
 
 ---@return Item
 function ItemEntity:getItem()
-    return ITEM_REGISTRY[self.item:GetKey()]
+    return ITEM_REGISTRY[self.item:getKey()]
 end
