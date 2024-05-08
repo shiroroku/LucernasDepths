@@ -190,16 +190,3 @@ function PlayerEntity:S_load(world_folder, file_name)
     end
     return false
 end
-
-function PlayerEntity:C_hasCharacter()
-    return self.character ~= nil
-end
-
-function PlayerEntity:C_getCharacter()
-    if not self:C_hasCharacter() then error("Getting character before it was set") end
-    return self.character
-end
-
-function PlayerEntity:C_setCharacter(character)
-    self.character = character
-end

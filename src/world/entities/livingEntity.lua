@@ -42,3 +42,18 @@ end
 function LivingEntity:setSpeed(amt)
     self.data.speed = amt
 end
+
+function LivingEntity:C_hasCharacter()
+    return self.character ~= nil
+end
+
+---@return CharacterInstance
+function LivingEntity:C_getCharacter()
+    if not self:C_hasCharacter() then error("Getting character before it was set") end
+    return self.character
+end
+
+---@param character CharacterInstance
+function LivingEntity:C_setCharacter(character)
+    self.character = character
+end

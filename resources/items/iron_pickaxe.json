@@ -1,6 +1,6 @@
 {
     "texture": {
-        "atlas": "sprites/tools.png",
+        "atlas": "items/tools.png",
         "u": 1,
         "v": 0
     },

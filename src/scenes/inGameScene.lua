@@ -4,10 +4,11 @@ require "src.helperFunctions"
 require "src.network.client"
 require "src.components.scene"
 require "src.world.entities.playerEntity"
-require "src.world.characters"
+require "src.characterRegistry"
 require "src.world.autotiler"
 require "src.components.ui.messagebox"
 require "src.tileRegistry"
+require "src.components.characterInstance"
 local Camera = require "libraries.Camera"
 
 local client --todo make this less annoying to access
@@ -41,13 +42,12 @@ InGameSceneConstructor = Scene:extend {
 		self.local_player = PlayerEntity:new(CLIENT_CONFIG.multiplayer_name, NewUUID(), {})
 		self.local_player:setSkinColors(CLIENT_CONFIG.player_skin_colors)
 		self.local_player:setSkin(CLIENT_CONFIG.player_skin)
-		self.local_player:C_setCharacter(CHARACTERS[CLIENT_CONFIG.player_skin](
+		self.local_player:C_setCharacter(CharacterInstance:new(CHARACTER_REGISTRY[CLIENT_CONFIG.player_skin](
 			CLIENT_CONFIG.player_skin_colors.skin,
 			CLIENT_CONFIG.player_skin_colors.clothes,
 			CLIENT_CONFIG.player_skin_colors.primary,
 			CLIENT_CONFIG.player_skin_colors.secondary
-		))
-
+		)))
 
 		ClientEvents = {
 			update_players = function(_, data) -- patches players which are not us
@@ -62,15 +62,15 @@ InGameSceneConstructor = Scene:extend {
 						-- if we dont have a character made, but we can see them, then make one
 						if self.local_world.players[uuid]:isLoaded() and not self.local_world.players[uuid]:C_hasCharacter() then
 							local char = "chroma"
-							if CHARACTERS[self.local_world.players[uuid]:getSkin()] then -- make sure we have this skin, else use chroma as default
+							if CHARACTER_REGISTRY[self.local_world.players[uuid]:getSkin()] then -- make sure we have this skin, else use chroma as default
 								char = self.local_world.players[uuid]:getSkin()
 							end
 							local skin_colors = self.local_world.players[uuid]:getSkinColors()
-							self.local_world.players[uuid]:C_setCharacter(CHARACTERS[char](
+							self.local_world.players[uuid]:C_setCharacter(CharacterInstance:new(CHARACTER_REGISTRY[char](
 								skin_colors.skin,
 								skin_colors.clothes,
 								skin_colors.primary,
-								skin_colors.secondary))
+								skin_colors.secondary)))
 						end
 					end
 				end
@@ -210,13 +210,15 @@ InGameSceneConstructor = Scene:extend {
 
 		-- CLIENT SPRITES
 		if self.local_player:C_hasCharacter() then
-			UpdateCharacter(self.local_player:C_getCharacter(), dt, self.local_player.client_x, self.local_player.client_y)
+			self.local_player:C_getCharacter():setPos(self.local_player.client_x, self.local_player.client_y)
+			self.local_player:C_getCharacter():update(dt)
 		end
 		for _, p in pairs(self.local_world.players) do
 			if p:isLoaded() and p:C_hasCharacter() then
 				local px, py = p:getPos()
 				p.client_x, p.client_y = Lerp(p.client_x or 0, px, 0.1), Lerp(p.client_y or 0, py, 0.1)
-				UpdateCharacter(p:C_getCharacter(), dt, p.client_x, p.client_y)
+				p:C_getCharacter():setPos(p.client_x, p.client_y)
+				p:C_getCharacter():update(dt)
 			end
 		end
 	end,
@@ -275,7 +277,7 @@ InGameSceneConstructor = Scene:extend {
 					if (player.client_y or 0) > self.local_player.client_y then
 						table.insert(players_front, player)
 					else
-						DrawCharacter(player:C_getCharacter())
+						player:C_getCharacter():draw()
 					end
 				end
 			end
@@ -283,13 +285,13 @@ InGameSceneConstructor = Scene:extend {
 			--LOCAL PLAYER
 			ClientCamera:detach()
 			if self.local_player:isLoaded() and self.local_player:C_hasCharacter() then
-				DrawCharacter(self.local_player:C_getCharacter(), INTERNAL_RES_WIDTH * 0.5, INTERNAL_RES_HEIGHT * 0.5)
+				self.local_player:C_getCharacter():draw(INTERNAL_RES_WIDTH * 0.5, INTERNAL_RES_HEIGHT * 0.5)
 			end
 			ClientCamera:attach()
 
 			--OTHER PLAYERS (in front of player)
 			for _, player in pairs(players_front) do
-				DrawCharacter(player:C_getCharacter())
+				player:C_getCharacter():draw()
 			end
 
 			--NAME PLATES
