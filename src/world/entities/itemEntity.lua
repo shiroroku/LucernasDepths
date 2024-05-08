@@ -1,11 +1,20 @@
 require "src.world.entities.entity"
 
-ItemEntity = Entity:extend {
-    init = function(self, name, data)
-        Entity.init(self, name, data)
-    end,
+---@class ItemEntity
+---@field item Item
+ItemEntity = Entity:new()
 
-    GetItem = function(self)
-        return ITEM_REGISTRY[self.name]
-    end
-}
+---@param item Item
+---@param uuid string
+---@param data table
+function ItemEntity:new(item, uuid, data)
+    local o = Entity:new(item:GetKey(), uuid, data)
+    setmetatable(o, { __index = self })
+    o.item = item or nil
+    return o
+end
+
+---@return Item
+function ItemEntity:getItem()
+    return ITEM_REGISTRY[self.item:GetKey()]
+end

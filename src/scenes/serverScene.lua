@@ -28,7 +28,7 @@ local function sendTileChanged(world, tile_x, tile_y)
     local updated_chunks = {}
     updated_chunks[XYToCoordKey(cx, cy)] = world.chunks[XYToCoordKey(cx, cy)]
     for _, player in pairs(world.players) do
-        local player_chunk_x, player_chunk_y = PointToChunkPos(player:GetPos())
+        local player_chunk_x, player_chunk_y = PointToChunkPos(player:getPos())
         local chunk_distance                 = 1
         if player_chunk_x - cx <= chunk_distance and player_chunk_y - cy <= chunk_distance then
             sendChunks(player.peer, updated_chunks)
@@ -70,30 +70,30 @@ ServerSceneConstructor = Scene:extend {
             player_auth = function(event, data)
                 -- someone tried to connect with a player id/token that is already connected
                 for token, player in pairs(self.world.players) do
-                    if tostring(token) == data.token or data.uuid == player:GetUUID() then
+                    if tostring(token) == data.token or data.uuid == player:getUUID() then
                         event.peer:disconnect(2)
                         return
                     end
                 end
 
-                local player = PlayerEntity(data.name, data.uuid, {}) -- new player object
+                local player = PlayerEntity:new(data.name, data.uuid, {}) -- new player object
 
-                local loaded_player = player:Server_Load(self.world.name, data.token)
+                local loaded_player = player:S_load(self.world.name, data.token)
                 if not loaded_player then
-                    player:SetPos(CHUNK_WIDTH / 2 * 16, CHUNK_HEIGHT / 2 * 16)
-                    player:SetInventorySlot(4, { item = "stone_pickaxe" })
+                    player:setPos(CHUNK_WIDTH / 2 * 16, CHUNK_HEIGHT / 2 * 16)
+                    player:setInventorySlot(4, { item = "stone_pickaxe" })
                     Log(string.format("%s! A new player!", data.name), COLORS.green)
-                    player:Server_Save(self.world.name, data.token)
+                    player:S_save(self.world.name, data.token)
                 end
-                player:SetSkin(data.skin)
-                player:SetSkinColors(data.skin_colors)
+                player:setSkin(data.skin)
+                player:setSkinColors(data.skin_colors)
 
                 player.peer = event.peer                     -- link ip to player
                 self.world.players[data.token] = player      -- insert player into the world!
-                sendPlayerData(event.peer, player:GetData()) -- send their player data back to owner
+                sendPlayerData(event.peer, player:getData()) -- send their player data back to owner
 
                 -- send chunks to player
-                local player_chunk_x, player_chunk_y = PointToChunkPos(player:GetPos())
+                local player_chunk_x, player_chunk_y = PointToChunkPos(player:getPos())
                 local load_distance = 1
                 local chunks_to_send = {}
                 for x = -load_distance, load_distance do
@@ -107,7 +107,7 @@ ServerSceneConstructor = Scene:extend {
                 -- send client the other connected players
                 local player_list = {}
                 for _, p in pairs(self.world.players) do
-                    player_list[p:GetUUID()] = { name = p:GetName(), uuid = p:GetUUID(), data = {} } -- no data shared, only names/uuid
+                    player_list[p:getUUID()] = { name = p:getName(), uuid = p:getUUID(), data = {} } -- no data shared, only names/uuid
                 end
                 udpServer:broadcast({
                     event = "update_players",
@@ -125,8 +125,8 @@ ServerSceneConstructor = Scene:extend {
                 -- player sends this to try to break a block
                 local player = self:GetPlayerFromPeer(event.peer)
                 if player then
-                    local px, py = player:GetPos()
-                    local hit, hit_x, hit_y = RayCast(px, py, data.x, data.y, player:GetReach(), function(x, y)
+                    local px, py = player:getPos()
+                    local hit, hit_x, hit_y = RayCast(px, py, data.x, data.y, player:getReach(), function(x, y)
                         return GetTileFromPoint(self.world, x, y):HasProperty("toughness")
                     end)
                     if hit then
@@ -152,10 +152,10 @@ ServerSceneConstructor = Scene:extend {
             player_inventory_move = function(event, data)
                 local player = self:GetPlayerFromPeer(event.peer)
                 if player then
-                    local picking_up = player:GetInventorySlot(data.clicked_slot)
-                    player:SetInventorySlot(data.clicked_slot, player:GetInventorySlot(data.held_slot))
-                    player:SetInventorySlot(data.held_slot, picking_up)
-                    sendPlayerData(player.peer, player:GetData())
+                    local picking_up = player:getInventorySlot(data.clicked_slot)
+                    player:setInventorySlot(data.clicked_slot, player:getInventorySlot(data.held_slot))
+                    player:setInventorySlot(data.held_slot, picking_up)
+                    sendPlayerData(player.peer, player:getData())
                 end
             end,
             disconnected = function(event)
@@ -163,15 +163,15 @@ ServerSceneConstructor = Scene:extend {
 
                 local player, token = self:GetPlayerFromPeer(event.peer)
                 if player then
-                    player:Server_Save(self.world.name, token) -- save their data
-                    Log(string.format("%s(%s) Left", player:GetName(), token), COLORS.green)
-                    self.world.players[token] = nil            -- unload them
+                    player:S_save(self.world.name, token) -- save their data
+                    Log(string.format("%s(%s) Left", player:getName(), token), COLORS.green)
+                    self.world.players[token] = nil       -- unload them
 
                     -- let all clients know they disconnected
                     udpServer:broadcast({
                         event = "broadcast_player_disconnect",
-                        name = player:GetName(),
-                        uuid = player:GetUUID()
+                        name = player:getName(),
+                        uuid = player:getUUID()
                     })
                 end
             end
@@ -190,7 +190,7 @@ ServerSceneConstructor = Scene:extend {
                 if player.inputs.down then dy = dy + 1 end
                 if player.inputs.left then dx = dx - 1 end
                 if player.inputs.right then dx = dx + 1 end
-                player:MovePlayer(self.world, dx, dy, dt)
+                player:move(self.world, dx, dy, dt)
             end
         end
 
@@ -198,7 +198,7 @@ ServerSceneConstructor = Scene:extend {
         self.time = self.time + dt
         if self.time > self.update_rate then
             for token, player in pairs(self.world.players) do
-                local px_c, py_c     = PointToChunkPos(player:GetPos())
+                local px_c, py_c     = PointToChunkPos(player:getPos())
 
                 -- PROVIDE SURROUNDING CHUNKS
                 local chunks_to_send = {}
@@ -219,16 +219,16 @@ ServerSceneConstructor = Scene:extend {
                 local nearby_players = {}
                 for otoken, op in pairs(self.world.players) do
                     if otoken ~= token then
-                        local opx_c, opy_c = PointToChunkPos(op:GetPos())
+                        local opx_c, opy_c = PointToChunkPos(op:getPos())
                         if math.abs(px_c - opx_c) <= 1 and math.abs(py_c - opy_c) <= 1 then -- if players are within 1 chunk away (3x3)
-                            nearby_players[op:GetUUID()] = {
-                                name = op:GetName(),
-                                uuid = op:GetUUID(),
-                                data = op:GetData()
+                            nearby_players[op:getUUID()] = {
+                                name = op:getName(),
+                                uuid = op:getUUID(),
+                                data = op:getData()
                             }
                         else
                             -- if they arent nearby we want the client to delete the old data is has
-                            nearby_players[op:GetUUID()] = { name = op:GetName(), uuid = op:GetUUID(), data = {} }
+                            nearby_players[op:getUUID()] = { name = op:getName(), uuid = op:getUUID(), data = {} }
                         end
                     end
                 end
@@ -240,7 +240,7 @@ ServerSceneConstructor = Scene:extend {
                 end
 
                 -- PROVIDE PLAYERS OWN DATA
-                sendPlayerData(player.peer, player:GetData())
+                sendPlayerData(player.peer, player:getData())
             end
             self.time = self.time - self.update_rate
         end
@@ -251,7 +251,7 @@ ServerSceneConstructor = Scene:extend {
             local unload_thread = coroutine.create(function()
                 local needed_chunks = {}                               -- chunks that the player is in and surrounds them
                 for _, player in pairs(self.world.players) do
-                    local player_chunk_x, player_chunk_y = PointToChunkPos(player:GetPos())
+                    local player_chunk_x, player_chunk_y = PointToChunkPos(player:getPos())
                     local load_distance = 1
                     for x = -load_distance, load_distance do
                         for y = -load_distance, load_distance do
@@ -310,7 +310,7 @@ ServerSceneConstructor = Scene:extend {
                 local player = self:GetPlayerFromPeer(peer)
                 local text = string.format("<#FFFFFF>[%s][%s]", tostring(peer), peer:state())
                 if player then
-                    text = string.format("%s[<#00FF00>%s<#FFFFFF>][%sms]", text, player:GetName(), tostring(peer:round_trip_time()))
+                    text = string.format("%s[<#00FF00>%s<#FFFFFF>][%sms]", text, player:getName(), tostring(peer:round_trip_time()))
                 end
                 DrawText(text, 3, io * 11, { 0.7, 0.7, 0.7 })
                 io = io + 1

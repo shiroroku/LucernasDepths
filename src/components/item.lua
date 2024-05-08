@@ -1,6 +1,7 @@
 local class = require "libraries.clasp"
 
 --- @class Item
+--- @field GetKey function
 --- @field HasProperty function
 --- @field GetProperty function
 --- @field GetDisplayName function
@@ -11,6 +12,10 @@ Item = class {
     init = function(self, key, properties)
         self.key = key
         self.properties = properties or {}
+    end,
+
+    GetKey = function(self)
+        return self.key
     end,
 
     GetProperty = function(self, property)

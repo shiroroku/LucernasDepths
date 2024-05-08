@@ -28,7 +28,7 @@ PlayerInventoryMenuConstructor = Scene:extend {
         self.return_function = return_function
 
         self.local_player = local_player
-        self.inv_tier = local_player:GetInventoryTier() -- get from server
+        self.inv_tier = local_player:getInventoryTier()
 
         self.held_slot = nil
         self.inv_w, self.inv_h = 3 + self.inv_tier, 4
@@ -40,7 +40,7 @@ PlayerInventoryMenuConstructor = Scene:extend {
     ClickSlot = function(self, slot)
         if self.held_slot then
             -- we clicked on a slot with an item
-            if self.local_player:CanSetInventorySlot(slot, self.local_player:GetInventorySlot(self.held_slot).item) then
+            if self.local_player:canSetInventorySlot(slot, self.local_player:getInventorySlot(self.held_slot).item) then
                 if self.held_slot ~= slot then -- we picked up and placed in same location, no need to update
                     self.udp_client:send({
                         event = "player_inventory_move",
@@ -49,13 +49,13 @@ PlayerInventoryMenuConstructor = Scene:extend {
                     })
                 end
                 -- we move the item client side, when the server gets the above packet it will send us a patch
-                local picking_up = self.local_player:GetInventorySlot(slot)
-                self.local_player:SetInventorySlot(slot, self.local_player:GetInventorySlot(self.held_slot))
-                self.local_player:SetInventorySlot(self.held_slot, picking_up)
+                local picking_up = self.local_player:getInventorySlot(slot)
+                self.local_player:setInventorySlot(slot, self.local_player:getInventorySlot(self.held_slot))
+                self.local_player:setInventorySlot(self.held_slot, picking_up)
                 self.held_slot = nil
             end
         else
-            if self.local_player:GetInventorySlot(slot) then -- we clicked on an item with an empty hand
+            if self.local_player:getInventorySlot(slot) then -- we clicked on an item with an empty hand
                 self.held_slot = slot
             end
         end
@@ -80,7 +80,7 @@ PlayerInventoryMenuConstructor = Scene:extend {
             love.graphics.setColor(0, 0, 0, 0.4)
             love.graphics.rectangle("fill", sx, sy, 18, 18)
             love.graphics.setColor(1, 1, 1, 1)
-            local slot_instance = self.local_player:GetInventorySlot(slot)
+            local slot_instance = self.local_player:getInventorySlot(slot)
             if slot_instance and slot ~= self.held_slot then
                 print(slot_instance)
                 ITEM_REGISTRY[slot_instance.item]:C_AddSpriteBatch(sx + 1, sy + 1)
@@ -106,7 +106,7 @@ PlayerInventoryMenuConstructor = Scene:extend {
             for x = 0, self.inv_w - 1 do
                 local sx, sy = self.menu_x + self.menu_w + x * 19 - self.inv_w * 19 - self.menu_padding * 2, self.menu_y + self.menu_h + y * 19 - self.inv_h * 19 - self.menu_padding * 2
                 DrawPanel(sx, sy, 18, 18, PanelIn)
-                local slot_instance = self.local_player:GetInventorySlot(slot)
+                local slot_instance = self.local_player:getInventorySlot(slot)
                 if slot_instance and slot ~= self.held_slot then
                     ITEM_REGISTRY[slot_instance.item]:C_AddSpriteBatch(sx + 1, sy + 1)
                 end
@@ -138,8 +138,8 @@ PlayerInventoryMenuConstructor = Scene:extend {
         love.graphics.draw(self.color_sprite, self.menu_x + 19 + 19 * 2 - 4, self.menu_y)
 
         -- draws held item
-        if self.held_slot and self.local_player:GetInventorySlot(self.held_slot) then
-            ITEM_REGISTRY[self.local_player:GetInventorySlot(self.held_slot).item]:C_AddSpriteBatch(mouse_x - 8, mouse_y - 8)
+        if self.held_slot and self.local_player:getInventorySlot(self.held_slot) then
+            ITEM_REGISTRY[self.local_player:getInventorySlot(self.held_slot).item]:C_AddSpriteBatch(mouse_x - 8, mouse_y - 8)
         end
 
         C_DrawItemSBs()

@@ -33,13 +33,15 @@ InGameSceneConstructor = Scene:extend {
 		self.update_rate = 0.01 -- 100Hz, the rate that the client sends inputs to the server
 		self.local_world = {
 			chunks = {},
+			---@type {[string]: PlayerEntity}
 			players = {}, -- [uuid]{player class}
 			entities = {} -- [uuid]{extends entity}
 		}
-		self.local_player = PlayerEntity(CLIENT_CONFIG.multiplayer_name, NewUUID(), {})
-		self.local_player:SetSkinColors(CLIENT_CONFIG.player_skin_colors)
-		self.local_player:SetSkin(CLIENT_CONFIG.player_skin)
-		self.local_player:Client_SetCharacter(CHARACTERS[CLIENT_CONFIG.player_skin](
+		---@type PlayerEntity
+		self.local_player = PlayerEntity:new(CLIENT_CONFIG.multiplayer_name, NewUUID(), {})
+		self.local_player:setSkinColors(CLIENT_CONFIG.player_skin_colors)
+		self.local_player:setSkin(CLIENT_CONFIG.player_skin)
+		self.local_player:C_setCharacter(CHARACTERS[CLIENT_CONFIG.player_skin](
 			CLIENT_CONFIG.player_skin_colors.skin,
 			CLIENT_CONFIG.player_skin_colors.clothes,
 			CLIENT_CONFIG.player_skin_colors.primary,
@@ -51,20 +53,20 @@ InGameSceneConstructor = Scene:extend {
 			update_players = function(_, data) -- patches players which are not us
 				-- data is [uuid]{data}
 				for uuid, player_data in pairs(data.players) do
-					if uuid ~= self.local_player:GetUUID() then -- not us
+					if uuid ~= self.local_player:getUUID() then -- not us
 						if self.local_world.players[uuid] then -- we have old data already, replace it
-							self.local_world.players[uuid]:SetData(player_data.data)
+							self.local_world.players[uuid]:setData(player_data.data)
 						else                     -- make a new player
-							self.local_world.players[uuid] = PlayerEntity(player_data.name, player_data.uuid, player_data.data)
+							self.local_world.players[uuid] = PlayerEntity:new(player_data.name, player_data.uuid, player_data.data)
 						end
 						-- if we dont have a character made, but we can see them, then make one
-						if self.local_world.players[uuid]:IsLoaded() and not self.local_world.players[uuid]:Client_HasCharacter() then
+						if self.local_world.players[uuid]:isLoaded() and not self.local_world.players[uuid]:C_hasCharacter() then
 							local char = "chroma"
-							if CHARACTERS[self.local_world.players[uuid]:GetSkin()] then -- make sure we have this skin, else use chroma as default
-								char = self.local_world.players[uuid]:GetSkin()
+							if CHARACTERS[self.local_world.players[uuid]:getSkin()] then -- make sure we have this skin, else use chroma as default
+								char = self.local_world.players[uuid]:getSkin()
 							end
-							local skin_colors = self.local_world.players[uuid]:GetSkinColors()
-							self.local_world.players[uuid]:Client_SetCharacter(CHARACTERS[char](
+							local skin_colors = self.local_world.players[uuid]:getSkinColors()
+							self.local_world.players[uuid]:C_setCharacter(CHARACTERS[char](
 								skin_colors.skin,
 								skin_colors.clothes,
 								skin_colors.primary,
@@ -92,7 +94,7 @@ InGameSceneConstructor = Scene:extend {
 				client:send({
 					event = "player_auth",
 					token = CLIENT_CONFIG.multiplayer_token, -- should be encrypted, and only sent here this one time
-					uuid = self.local_player:GetUUID(),
+					uuid = self.local_player:getUUID(),
 					name = CLIENT_CONFIG.multiplayer_name,
 					skin = CLIENT_CONFIG.player_skin,
 					skin_colors = CLIENT_CONFIG.player_skin_colors
@@ -101,7 +103,7 @@ InGameSceneConstructor = Scene:extend {
 			end,
 			player_data = function(_, data)
 				-- patches our player
-				self.local_player:SetData(data.player_data)
+				self.local_player:setData(data.player_data)
 			end
 		}
 
@@ -134,9 +136,9 @@ InGameSceneConstructor = Scene:extend {
 		ClientCamera:follow(Round(self.local_player.client_x or 0), Round(self.local_player.client_y or 0)) -- round so we are pixel perfect
 
 		-- only run rest of function if our player is loaded
-		if not self.local_player:IsLoaded() then return end
+		if not self.local_player:isLoaded() then return end
 
-		local player_x, player_y = self.local_player:GetPos()
+		local player_x, player_y = self.local_player:getPos()
 
 		-- GAME TICK
 		self.tick = (self.tick or 0) + dt
@@ -167,7 +169,7 @@ InGameSceneConstructor = Scene:extend {
 			end
 			if not SHOW_CONSOLE and not Scene.IsSubSceneOpen(self) then -- because we cant cancel the update function in console
 				client:send(inputPacket)
-				self.local_player:MovePlayer(self.local_world, dx, dy, dt)
+				self.local_player:move(self.local_world, dx, dy, dt)
 			end
 			self.tick = self.tick - self.update_rate
 		end
@@ -207,14 +209,14 @@ InGameSceneConstructor = Scene:extend {
 		end
 
 		-- CLIENT SPRITES
-		if self.local_player:Client_HasCharacter() then
-			UpdateCharacter(self.local_player:Client_GetCharacter(), dt, self.local_player.client_x, self.local_player.client_y)
+		if self.local_player:C_hasCharacter() then
+			UpdateCharacter(self.local_player:C_getCharacter(), dt, self.local_player.client_x, self.local_player.client_y)
 		end
 		for _, p in pairs(self.local_world.players) do
-			if p:IsLoaded() and p:Client_HasCharacter() then
-				local px, py = p:GetPos()
+			if p:isLoaded() and p:C_hasCharacter() then
+				local px, py = p:getPos()
 				p.client_x, p.client_y = Lerp(p.client_x or 0, px, 0.1), Lerp(p.client_y or 0, py, 0.1)
-				UpdateCharacter(p:Client_GetCharacter(), dt, p.client_x, p.client_y)
+				UpdateCharacter(p:C_getCharacter(), dt, p.client_x, p.client_y)
 			end
 		end
 	end,
@@ -223,9 +225,9 @@ InGameSceneConstructor = Scene:extend {
 		love.graphics.clear(0.05, 0.05, 0.05);
 
 		ClientCamera:attach()
-		if self.local_player:IsLoaded() then
+		if self.local_player:isLoaded() then
 			local mouse_x, mouse_y = GetMousePositionWorld(ClientCamera)
-			local px, py = self.local_player:GetPos()
+			local px, py = self.local_player:getPos()
 
 			--TILES
 			C_ClearTileSBs()
@@ -249,7 +251,7 @@ InGameSceneConstructor = Scene:extend {
 
 
 			--TILE HIGHLIGHT (for block breaking/selecting)
-			local hit, hit_x, hit_y = RayCast(px, py, mouse_x, mouse_y, self.local_player:GetReach(), function(x, y) return GetTileFromPoint(self.local_world, x, y):HasProperty("solid") end)
+			local hit, hit_x, hit_y = RayCast(px, py, mouse_x, mouse_y, self.local_player:getReach(), function(x, y) return GetTileFromPoint(self.local_world, x, y):HasProperty("solid") end)
 			if hit then
 				local tx, ty = PointToTilePos(hit_x, hit_y)
 				love.graphics.setColor(1, 1, 1, 0.3)
@@ -269,31 +271,31 @@ InGameSceneConstructor = Scene:extend {
 			--OTHER PLAYERS (behind player)
 			local players_front = {}
 			for _, player in pairs(self.local_world.players) do
-				if player:IsLoaded() and player:Client_HasCharacter() then -- if we have player xy then draw them
+				if player:isLoaded() and player:C_hasCharacter() then -- if we have player xy then draw them
 					if (player.client_y or 0) > self.local_player.client_y then
 						table.insert(players_front, player)
 					else
-						DrawCharacter(player:Client_GetCharacter())
+						DrawCharacter(player:C_getCharacter())
 					end
 				end
 			end
 
 			--LOCAL PLAYER
 			ClientCamera:detach()
-			if self.local_player:IsLoaded() and self.local_player:Client_HasCharacter() then
-				DrawCharacter(self.local_player:Client_GetCharacter(), INTERNAL_RES_WIDTH * 0.5, INTERNAL_RES_HEIGHT * 0.5)
+			if self.local_player:isLoaded() and self.local_player:C_hasCharacter() then
+				DrawCharacter(self.local_player:C_getCharacter(), INTERNAL_RES_WIDTH * 0.5, INTERNAL_RES_HEIGHT * 0.5)
 			end
 			ClientCamera:attach()
 
 			--OTHER PLAYERS (in front of player)
 			for _, player in pairs(players_front) do
-				DrawCharacter(player:Client_GetCharacter())
+				DrawCharacter(player:C_getCharacter())
 			end
 
 			--NAME PLATES
 			for uuid, player in pairs(self.local_world.players) do
-				if player:IsLoaded() then -- if we have player xy then draw them
-					local name = CLIENT_CONFIG.render_debug and string.format("<#88FF88>%s<#AAAAAA>(%s)", player:GetName(), uuid) or "<#88FF88>" .. player:GetName()
+				if player:isLoaded() then -- if we have player xy then draw them
+					local name = CLIENT_CONFIG.render_debug and string.format("<#88FF88>%s<#AAAAAA>(%s)", player:getName(), uuid) or "<#88FF88>" .. player:getName()
 					DrawText(name, (player.client_x or 0) - GetTextWidth(name, FontRegular) / 2, (player.client_y or 0) - FontRegular:getHeight() / 2 - 20)
 				end
 			end
@@ -316,7 +318,7 @@ InGameSceneConstructor = Scene:extend {
 		end
 		ClientCamera:detach()
 
-		if self.local_player:IsLoaded() then DrawDebugRenderer() end
+		if self.local_player:isLoaded() then DrawDebugRenderer() end
 		Scene.Draw(self)
 		self.message_box:draw()
 	end,
@@ -361,10 +363,10 @@ InGameSceneConstructor = Scene:extend {
 		if Scene.MousePress(self, x, y, mouse_button) then return true end
 
 		-- breaks a block
-		if self.local_player:IsLoaded() and client then
-			local px, py = self.local_player:GetPos()
+		if self.local_player:isLoaded() and client then
+			local px, py = self.local_player:getPos()
 			local mx, my = GetMousePositionWorld(ClientCamera)
-			local hit, hit_x, hit_y = RayCast(px, py, mx, my, self.local_player:GetReach(), function(tx, ty) return GetTileFromPoint(self.local_world, tx, ty):HasProperty("toughness") end)
+			local hit, hit_x, hit_y = RayCast(px, py, mx, my, self.local_player:getReach(), function(tx, ty) return GetTileFromPoint(self.local_world, tx, ty):HasProperty("toughness") end)
 			if hit then
 				client:send({
 					event = "break_block",
