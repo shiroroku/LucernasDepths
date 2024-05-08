@@ -8,10 +8,12 @@ PlayerEntity = LivingEntity:new()
 
 ---@alias inventory {[string]: ItemInstance}
 
+---@return PlayerEntity
 function PlayerEntity:new(name, uuid, data)
     local o = LivingEntity:new(name, uuid, data)
     setmetatable(o, { __index = self })
     --self.data.inventory = data.inventory or {}
+    ---@diagnostic disable-next-line: return-type-mismatch
     return o
 end
 

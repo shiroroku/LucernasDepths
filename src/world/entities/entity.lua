@@ -5,6 +5,7 @@
 ---@field data table Dynamic data which is saved, loaded, and synced (Position, Speed, Inventory, etc.)
 Entity = {}
 
+---@return Entity
 function Entity:new(name, uuid, data)
     local o = {}
     setmetatable(o, { __index = self })

@@ -2,9 +2,6 @@ local json = require "libraries.json.json"
 require "libraries.json.json-beautify"
 require "src.lang"
 
-INTERNAL_RES_WIDTH, INTERNAL_RES_HEIGHT = 480, 270
-SHOW_CONSOLE = false
-
 CLIENT_CONFIG_FILE = "client_config.json"
 
 math.randomseed(os.time())

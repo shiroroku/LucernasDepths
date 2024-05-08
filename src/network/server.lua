@@ -9,8 +9,7 @@ end
 
 function GameServer:new(ip, event_table)
     local o = {}
-    setmetatable(o, self)
-    self.__index = self
+    setmetatable(o, { __index = self })
     self.udp = enet.host_create(ip or "0.0.0.0:12345")
     self.clients = {}
     self.event_table = event_table or {}

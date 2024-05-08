@@ -15,6 +15,8 @@ require "src.errorScreen"
 require "src.lang"
 require "src.tileRegistry"
 
+SHOW_CONSOLE = false
+
 FontRegular = love.graphics.newFont("resources/fonts/ProggyTiny.ttf", 16)
 FontRegular:setFilter("nearest", "nearest")
 FontBig = love.graphics.newFont("resources/fonts/CozetteVector.ttf", 26)

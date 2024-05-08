@@ -15,8 +15,7 @@ GameClient = {}
 ---@return GameClient
 function GameClient:new(ip, disconnect_callback, event_table, timeout)
     local o = {}
-    setmetatable(o, self)
-    self.__index = self
+    setmetatable(o, { __index = self })
     self.timeout_duration = timeout or 10
     self.timeout = 0
     self.connected = false

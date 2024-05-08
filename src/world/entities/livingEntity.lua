@@ -4,9 +4,11 @@ require "src.world.entities.entity"
 ---@class LivingEntity : Entity
 LivingEntity = Entity:new()
 
+---@return LivingEntity
 function LivingEntity:new(name, uuid, data)
     local o = Entity:new(name, uuid, data)
     setmetatable(o, { __index = self })
+    ---@diagnostic disable-next-line: return-type-mismatch
     return o
 end
 

@@ -7,9 +7,6 @@ require "src.world.entities.playerEntity"
 -- tile_instances have a tile_key (tilemap:tile) for looking up additional static info such as quads, bitmasks, and default properties
 -- tiles in tilesmaps are the json elements found within the tilemaps tiles array in the json file
 
-CHUNK_WIDTH = 16
-CHUNK_HEIGHT = 16
-
 -- converts x, y to "x:y"
 function XYToCoordKey(x, y)
     return x .. ":" .. y

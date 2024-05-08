@@ -1,8 +1,8 @@
 ---@class TileInstance
 ---@field key string the tiles name, ex "dirt", "stone_wall"
 ---@field damage number? how much health the tile has, 0.0-1.0, nil if full health
----@field bit number? added by the autotiler for rendering the bitmask
----@field last_damaged number? last server tick that this tile was damaged
+---@field bit number? client, added by the autotiler for rendering the bitmask
+---@field last_damaged number? server, last server tick that this tile was damaged
 TileInstance = {}
 
 ---@class Tile
