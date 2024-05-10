@@ -2,8 +2,10 @@ local json = require "libraries.json.json"
 require "libraries.json.json-beautify"
 require "src.world.entities.livingEntity"
 
-
 ---@class PlayerEntity : LivingEntity
+---@field peer any server
+---@field last_chunk_x number server
+---@field last_chunk_y number server
 PlayerEntity = LivingEntity:new()
 
 ---@alias inventory {[string]: ItemInstance}

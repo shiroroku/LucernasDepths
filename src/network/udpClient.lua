@@ -1,7 +1,7 @@
 local enet = require "enet"
 
----@class GameClient
-GameClient = {}
+---@class UdpClient
+UdpClient = {}
 
 -- disconnect numbers:
 -- 1 - timeout
@@ -12,8 +12,8 @@ GameClient = {}
 ---@param disconnect_callback function called when the client is disconnected by the server or times out
 ---@param event_table function[] events that are called when receiving data
 ---@param timeout number how many ticks until we give up on trying to connect
----@return GameClient
-function GameClient:new(ip, disconnect_callback, event_table, timeout)
+---@return UdpClient
+function UdpClient:new(ip, disconnect_callback, event_table, timeout)
     local o = {}
     setmetatable(o, { __index = self })
     self.timeout_duration = timeout or 10
@@ -28,7 +28,7 @@ function GameClient:new(ip, disconnect_callback, event_table, timeout)
     return o
 end
 
-function GameClient:update(dt)
+function UdpClient:update(dt)
     repeat
         local event = self.udpHost:service()
         if event then
@@ -67,13 +67,13 @@ function GameClient:update(dt)
     return true
 end
 
-function GameClient:quit()
+function UdpClient:quit()
     self.udpPeer:disconnect_now()
     self.udpPeer = nil
     self.udpHost:flush()
     --self.udpHost:destroy() ?
 end
 
-function GameClient:send(table_data) self.udpPeer:send(EncodeAndCompress(table_data)) end
+function UdpClient:send(table_data) self.udpPeer:send(EncodeAndCompress(table_data)) end
 
-function GameClient:getPing() return self.udpPeer:round_trip_time() end
+function UdpClient:getPing() return self.udpPeer:round_trip_time() end

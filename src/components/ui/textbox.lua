@@ -30,7 +30,7 @@ function TextBox:new(params)
     return o
 end
 
-function TextBox:flash(color)
+function TextBox:flashColor(color)
     self.flash_color = color
     self.flash = 0.1
 end
@@ -105,12 +105,12 @@ function TextBox:keyPress(key, scancode, isrepeat)
         end
         if key == "v" and love.keyboard.isDown("lctrl", "rctrl") then
             self.text = self.text .. love.system.getClipboardText():gsub("\n", "")
-            self:flash({ 0.2, 1, 0.2 })
+            self:flashColor({ 0.2, 1, 0.2 })
             return true
         end
         if key == "c" and love.keyboard.isDown("lctrl", "rctrl") then
             love.system.setClipboardText(self.text)
-            self:flash({ 1, 0.2, 0.2 })
+            self:flashColor({ 1, 0.2, 0.2 })
             return true
         end
     end

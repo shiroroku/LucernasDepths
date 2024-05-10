@@ -1,13 +1,13 @@
 local enet = require "enet"
 require "src.helperFunctions"
 
-GameServer = {}
+UdpServer = {}
 
-function GameServer:getClients()
+function UdpServer:getClients()
     return self.clients
 end
 
-function GameServer:new(ip, event_table)
+function UdpServer:new(ip, event_table)
     local o = {}
     setmetatable(o, { __index = self })
     self.udp = enet.host_create(ip or "0.0.0.0:12345")
@@ -16,7 +16,7 @@ function GameServer:new(ip, event_table)
     return o
 end
 
-function GameServer:update()
+function UdpServer:update()
     repeat
         local event = self.udp:service()
         if event then
@@ -43,11 +43,11 @@ function GameServer:update()
     until event == nil
 end
 
-function GameServer:send(peer, table_data) peer:send(EncodeAndCompress(table_data)) end
+function UdpServer:send(peer, table_data) peer:send(EncodeAndCompress(table_data)) end
 
-function GameServer:broadcast(table_data) self.udp:broadcast(EncodeAndCompress(table_data)) end
+function UdpServer:broadcast(table_data) self.udp:broadcast(EncodeAndCompress(table_data)) end
 
-function GameServer:quit()
+function UdpServer:quit()
     self.udp:flush()
     for _, value in pairs(self.clients) do value:disconnect_now() end
     self.udp:destroy()

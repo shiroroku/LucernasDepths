@@ -27,7 +27,6 @@ local commands = {
             "[lua] code         - runs lua code",
             "[info]             - shows system info",
             "[exit]             - exits game",
-            "[ping]             - shows ping",
             "[bind] key command - binds a command to a key",
             "[clearbinds]       - removes all command keybinds"
         }
@@ -82,15 +81,6 @@ local commands = {
 
     exit = function(args)
         love.event.quit()
-    end,
-
-    ping = function(args)
-        local connection = GetServerConnection()
-        if connection then
-            Log(tostring(connection:getPing()) .. "ms", COLORS.grey)
-        else
-            Log("Not connected", COLORS.grey)
-        end
     end,
 
     bind = function(args)

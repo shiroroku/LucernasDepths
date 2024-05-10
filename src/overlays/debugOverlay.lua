@@ -14,7 +14,7 @@ local function writeLineLeft(text, line_number, color)
     DrawText(text, 2, 2 + line_number * 11, color or { 1, 1, 1 })
 end
 
-function DrawDebugRenderer()
+function DrawDebugRenderer(drawn_tiles, udp_client)
     if CLIENT_CONFIG.render_debug then
         love.graphics.push()
         love.graphics.setColor(1, 1, 1, 0.05)
@@ -24,7 +24,7 @@ function DrawDebugRenderer()
 
         writeLineLeft(string.format("Chunk: [%d, %d]", PointToChunkPos(ClientCamera.x, ClientCamera.y)), 0)
         writeLineLeft(string.format("Mouse: [%d, %d]", GetMousePositionWorld(ClientCamera)), 1)
-        writeLineLeft(string.format("Drawn Tiles: %d", GetNumberTilesDrawn()), 2)
+        writeLineLeft(string.format("Drawn Tiles: %d", drawn_tiles), 2)
 
         writeLineRight(string.format("FPS: %d", love.timer.getFPS()), 0, { 0, 1, 0 })
         writeLineRight(string.format("Draw Calls: %d", stats.drawcalls), 1)
@@ -32,9 +32,8 @@ function DrawDebugRenderer()
         writeLineRight(string.format("Tex memory: %.2f MB", stats.texturememory / 1024 / 1024), 3)
 
 
-        local connection = GetServerConnection()
-        if connection then
-            writeLineRight(string.format("Ping: %s", tostring(connection:getPing()) .. "ms"), 4)
+        if udp_client then
+            writeLineRight(string.format("Ping: %s", tostring(udp_client:getPing()) .. "ms"), 4)
         else
             writeLineRight("Ping: n/a", 4)
         end

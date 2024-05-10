@@ -3,6 +3,8 @@
 ---@field name string ex: "Luna", "Beth", "Skeleton"
 ---@field uuid string Unique string for looking up entities in a table
 ---@field data table Dynamic data which is saved, loaded, and synced (Position, Speed, Inventory, etc.)
+---@field client_x number client
+---@field client_y number client
 Entity = {}
 
 ---@return Entity
