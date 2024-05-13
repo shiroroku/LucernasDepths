@@ -21,8 +21,9 @@ function MessageBox:new(params)
     o.button = params.button or Button:new {
         name = GetTranslation("messagebox.ok"),
         centered = true,
+        w = 50,
         x = o.x,
-        y = o.y + FontRegular:getHeight(),
+        y = o.y + FontRegular:getHeight() * 1.5,
         onClick = function()
             self:hide()
             o.onClose()
