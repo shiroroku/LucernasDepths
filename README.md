@@ -9,6 +9,7 @@ saves and config are within the love2d save folder, [check here](https://love2d.
 ### Todo:
 - dont send all player data every update (stuff like skin only need to be sent once on join)
 - add a modular command system to the console, so scenes can load their own custom commands
+- move character rendering data to json
 
 ### Todo (Bugs):
 - setting config arg copies last config into new one because loadconfig is on require
