@@ -162,6 +162,36 @@ function PlayerEntity:move(world, dx, dy, dt)
             if dx == 1 then newx = oldx end                                -- moving right
         end
 
+        local clip_speed = speed * 0.5 * dt
+
+        -- if the player is touching one corner and not the other, nudge them in the direction of the empty corner
+        if tl_col:hasProperty("solid") and not tr_col:hasProperty("solid") then -- touching left top but not right top
+            if dy == -1 then newx = newx + clip_speed end                       -- moving up then move right
+        end
+        if tr_col:hasProperty("solid") and not tl_col:hasProperty("solid") then -- touching right top but not left top
+            if dy == -1 then newx = newx - clip_speed end                       -- moving up then move left
+        end
+        if bl_col:hasProperty("solid") and not br_col:hasProperty("solid") then -- touching left bottom but not right bottom
+            if dy == 1 then newx = newx + clip_speed end                        -- moving down then move right
+        end
+        if br_col:hasProperty("solid") and not bl_col:hasProperty("solid") then -- touching right bottom but not left bottom
+            if dy == 1 then newx = newx - clip_speed end                        -- moving down then move left
+        end
+
+
+        if tl_col:hasProperty("solid") and not bl_col:hasProperty("solid") then -- touching left top but not left bottom
+            if dx == -1 then newy = newy + clip_speed end                       -- moving left then move up
+        end
+        if bl_col:hasProperty("solid") and not tl_col:hasProperty("solid") then -- touching left bottom but not left top
+            if dx == -1 then newy = newy - clip_speed end                       -- moving left then move down
+        end
+        if tr_col:hasProperty("solid") and not br_col:hasProperty("solid") then -- touching right top but not right bottom
+            if dx == 1 then newy = newy + clip_speed end                        -- moving right then move up
+        end
+        if br_col:hasProperty("solid") and not tr_col:hasProperty("solid") then -- touching right bottom but not right top
+            if dx == 1 then newy = newy - clip_speed end                        -- moving right then move down
+        end
+
         self:setPos(newx, newy)
     end
 end

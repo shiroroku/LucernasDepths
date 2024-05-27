@@ -13,7 +13,7 @@ saves and config are within the love2d save folder, [check here](https://love2d.
 
 ### Todo (Bugs):
 - setting config arg copies last config into new one because loadconfig is on require
-- player can get stuck on corners, maybe rounded player hitboxes?
+- players can get tiny speedboost from running along + into walls
 - fix lang color support, all text that has color must begin with a color code, or it wont be rendered
 - disabling fullscreen in menu unfocuses game, meaning youll have to click twice to activate a button again
 - server will override clients config if closed first
