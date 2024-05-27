@@ -1,16 +1,15 @@
 require "src.world.entities.entity"
 
----@class ItemEntity
+---@class ItemEntity :Entity
 ---@field item Item
 ItemEntity = Entity:new()
 
----@param item Item
----@param uuid string
----@param data table
+---@return LivingEntity
 function ItemEntity:new(item, uuid, data)
     local o = Entity:new(item:getKey(), uuid, data)
     setmetatable(o, { __index = self })
-    o.item = item or nil
+    self.item = item or nil
+    ---@diagnostic disable-next-line: return-type-mismatch
     return o
 end
 
